@@ -63,18 +63,27 @@ const ProductDetail = () => {
     setQuantity(quantity + 1);
   };
 
-  const handleAddToCart = () => {
+  const handleAddToCart = async () => {
     if (!product) return;
 
-    addToCart({
-      productId: product.id,
-      quantity,
-    });
+    try {
+      await addToCart({
+        productId: product.id,
+        quantity,
+      });
 
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart`,
-    });
+      toast({
+        title: "Added to cart",
+        description: `${product.name} has been added to your cart`,
+      });
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      toast({
+        title: "Error",
+        description: "Could not add item to cart. Please try again.",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleAddToWishlist = () => {

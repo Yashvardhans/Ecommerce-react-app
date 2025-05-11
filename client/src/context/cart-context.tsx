@@ -98,38 +98,48 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setCartItems(updatedCart);
       } else {
         // Add to local cart if not authenticated
-        // First, fetch product details
-        const productResponse = await fetch(`/api/products/${item.productId}`);
-        if (!productResponse.ok) throw new Error("Product not found");
-        
-        const product = await productResponse.json();
-        
-        // Check if item is already in cart
-        const existingItemIndex = cartItems.findIndex(
-          (cartItem) => cartItem.productId === item.productId
-        );
-        
-        if (existingItemIndex !== -1) {
-          // Update quantity if item exists
-          const updatedItems = [...cartItems];
-          updatedItems[existingItemIndex].quantity += item.quantity;
-          setCartItems(updatedItems);
-        } else {
-          // Add new item if it doesn't exist
-          const newItem: CartItem = {
-            id: Date.now(), // Use timestamp as temporary ID
-            productId: item.productId,
-            quantity: item.quantity,
-            product: {
-              id: product.id,
-              name: product.name,
-              slug: product.slug,
-              price: product.price,
-              image: product.image,
-            },
-          };
+        try {
+          // First, fetch product details using slug instead of ID
+          // Get all products and find by ID
+          const productsResponse = await fetch(`/api/products`);
+          const products = await productsResponse.json();
           
-          setCartItems((prevItems) => [...prevItems, newItem]);
+          const product = products.find((p: any) => p.id === item.productId);
+          if (!product) throw new Error("Product not found");
+          
+          // Check if item is already in cart
+          const existingItemIndex = cartItems.findIndex(
+            (cartItem) => cartItem.productId === item.productId
+          );
+          
+          if (existingItemIndex !== -1) {
+            // Update quantity if item exists
+            const updatedItems = [...cartItems];
+            updatedItems[existingItemIndex].quantity += item.quantity;
+            setCartItems(updatedItems);
+          } else {
+            // Add new item if it doesn't exist
+            const newItem: CartItem = {
+              id: Date.now(), // Use timestamp as temporary ID
+              productId: item.productId,
+              quantity: item.quantity,
+              product: {
+                id: product.id,
+                name: product.name,
+                slug: product.slug,
+                price: product.price,
+                image: product.image,
+              },
+            };
+            
+            setCartItems((prevItems) => [...prevItems, newItem]);
+          }
+          
+          // Save to localStorage
+          localStorage.setItem("cart", JSON.stringify([...cartItems]));
+        } catch (error) {
+          console.error("Error fetching product:", error);
+          throw error;
         }
       }
     } catch (error) {
