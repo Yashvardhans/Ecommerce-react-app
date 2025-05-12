@@ -27,9 +27,15 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
     };
   }, [isOpen, onClose]);
   
-  // Close cart when location changes
+  // Close cart when location changes (but not on mount)
   useEffect(() => {
-    if (isOpen) onClose();
+    let isInitialMount = true;
+    
+    if (!isInitialMount && isOpen) {
+      onClose();
+    }
+    
+    isInitialMount = false;
   }, [location, isOpen, onClose]);
   
   const handleCheckout = () => {
@@ -41,9 +47,9 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
     onClose();
   };
   
-  const subtotal = cartTotal;
+  const subtotal = cartTotal || 0;
   const shipping = 0; // Free shipping
-  const tax = parseFloat((subtotal * 0.08).toFixed(2)); // 8% tax
+  const tax = parseFloat(((subtotal || 0) * 0.08).toFixed(2)); // 8% tax
   const total = subtotal + shipping + tax;
   
   return (

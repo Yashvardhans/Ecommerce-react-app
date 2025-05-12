@@ -135,8 +135,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
             setCartItems((prevItems) => [...prevItems, newItem]);
           }
           
-          // Save to localStorage
-          localStorage.setItem("cart", JSON.stringify([...cartItems]));
+          // Save to localStorage will happen in the effect hook
         } catch (error) {
           console.error("Error fetching product:", error);
           throw error;
