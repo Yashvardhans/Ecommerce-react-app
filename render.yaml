@@ -17,4 +17,4 @@ databases:
   - name: ecommerce-db
     databaseName: ecommerce
     user: ecommerce_user
-    plan: starter
+    plan: free
