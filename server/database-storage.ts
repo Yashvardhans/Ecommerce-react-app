@@ -1,5 +1,5 @@
 import { db } from "./db";
-import { eq, desc, and, asc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import {
   User, InsertUser, users,
   Category, InsertCategory, categories,

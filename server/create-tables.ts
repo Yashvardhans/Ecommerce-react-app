@@ -1,10 +1,6 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import ws from 'ws';
+import { Pool } from 'pg';
 import { readFileSync } from 'fs';
 import { join } from 'path';
-
-// Enable WebSocket for Neon database connection
-neonConfig.webSocketConstructor = ws;
 
 async function createTables() {
   if (!process.env.DATABASE_URL) {
@@ -12,7 +8,10 @@ async function createTables() {
   }
 
   // Create a database connection pool
-  const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+  const pool = new Pool({ 
+    connectionString: process.env.DATABASE_URL,
+    ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false
+  });
 
   try {
     console.log('Creating database tables...');
